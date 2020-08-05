@@ -1,0 +1,17 @@
+import {create, createAppContainer} from 'react-navigation';
+import {createStackNavigator} from 'react-navigation-stack';
+
+import EmailInputScreen from '../screens/EmailInputScreen';
+import IntroScreen from '../screens/IntroScreen';
+import LoginScreen from '../screens/LoginScreen';
+import PasswordInputScreen from '../screens/PasswordInputScreen';
+
+
+const StackNavigator = createStackNavigator({
+  IntroScreen: IntroScreen,
+  LoginScreen: LoginScreen,
+  EmailInputScreen:EmailInputScreen,
+  PasswordInputScreen:PasswordInputScreen
+});
+
+export default createAppContainer(StackNavigator);
