@@ -4,14 +4,22 @@ import {createStackNavigator} from 'react-navigation-stack';
 import EmailInputScreen from '../screens/EmailInputScreen';
 import IntroScreen from '../screens/IntroScreen';
 import LoginScreen from '../screens/LoginScreen';
+
 import PasswordInputScreen from '../screens/PasswordInputScreen';
 
 
 const StackNavigator = createStackNavigator({
-  IntroScreen: IntroScreen,
-  LoginScreen: LoginScreen,
+  IntroScreen: {
+    screen:IntroScreen,
+    navigationOptions:{header:null},
+  
+  },
+  LoginScreen: {
+    screen:LoginScreen,
+    navigationOptions:{headerShown:false}
+  },
   EmailInputScreen:EmailInputScreen,
-  PasswordInputScreen:PasswordInputScreen
-});
+  PasswordInputScreen:PasswordInputScreen,
+ },{initialRouteName:'EmailInputScreen'});
 
 export default createAppContainer(StackNavigator);
