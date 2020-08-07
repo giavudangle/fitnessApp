@@ -1,100 +1,109 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
   View,
   StyleSheet,
-  ActivityIndicator,
-  TouchableOpacity,
   KeyboardAvoidingView,
   ScrollView,
 } from 'react-native';
-
-import {BoxPasswordStrengthDisplay} from 'react-native-password-strength-meter';
-import {Text, Icon, Input, Button, SocialIcon} from 'react-native-elements';
+import { Text, Icon, Input, Button, SocialIcon } from 'react-native-elements';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
+import {BoxPasswordStrengthDisplay} from 'react-native-password-strength-meter'
 
 import firebase from 'react-native-firebase';
-import {Formik} from 'formik';
-import * as Yup from 'yup';
+
+
+const SignupSchema = Yup.object({
+  password: Yup.string()
+    .required('Password is required')
+    .min(6, 'Password must be at least 6 characters'),
+  passwordConfirm: Yup.string()
+    .oneOf([Yup.ref('password'), null], 'Passwords must match')
+    .required('Password confirm is required'),
+});
+const auth = firebase.auth();   
+
+// signUp = (values, navigation) => {
+    
+//   this.setState({loading: true});
+//   let email = this.props.navigation.getParam('email');
+//   firebase
+//     .auth()
+//     .createUserWithEmailAndPassword(email, values.password)
+//     .then(user => {
+//       this.setState({user});
+//       alert('Registration success');
+//     })
+// };
+
 
 
 export class PasswordInputScreen extends Component {
   static navigationOptions = {
-    headerTransparent: true,
-    headerTitle: '',
+    headerShown: false,
   };
 
   
+ 
 
-
-  onChange = password => this.setState({password});
-
-  signUp = (values, navigation) => {
-    this.setState({loading: true});
-    let email = this.props.navigation.getParam('email');
-    firebase
-      .auth()
-      .createUserWithEmailAndPassword(email, values.password)
+  render() {
+    
+    const signUp = async (values,navigation) => {
+      console.log(values);
+      this.setState({loading:true});
+      let email = navigation.getParam('email');
+      await auth
+      .createUserWithEmailAndPassword(email,values.password)
       .then(user => {
         this.setState({user});
-        alert('Registration success');
+        console.log(this.state);
       })
-  };
-
-
-  render() { 
-    const SignupSchema = Yup.object({
-      password: Yup.string()
-        .required('Password is required')
-        .min(6,'Password must be at leat 6 characters'),
-      passwordConfirm: Yup.string()
-        .oneOf([Yup.ref('password'),null],'Passwords must match')
-        .required('Password confirm is required')
-    })
-
+    }
+  
+    
     return (
       <Formik
-      initialValues={{password: '', passwordConfirm: ''}}
-      onSubmit={(values, {setSubmitting}) => {
-        // this.signUp(values, this.props.navigation);
-        // setSubmitting(false);
-        console.log(values);
-      }}
-      validationSchema={SignupSchema}>
-      {formikProps => (
-        <>
-        <View style={styles.headerContainer}>
-        <Icon
-          name="md-fitness"
-          size={80}
-          type="ionicon"
-          color={'#7265E2'}
-        />
-        <Text h4 style={{textAlign: 'center'}}>
-          Now let's setup your password
-        </Text>
-      </View>
-      <Input
-        leftIcon={
-          <Icon
-            name="lock"
-            color="rgba(110, 120, 170, 1)"
-            size={25}
-          />
-        }
-        placeholder="Email"
-        inputContainerStyle={{
-          borderWidth: 1,
-          borderColor: 'white',
-          borderLeftWidth: 0,
-          height: 50,
-          backgroundColor: 'white',
-          marginBottom: 20,
+        initialValues={{password: '', passwordConfirm: ''}}
+        onSubmit={  (values, {setSubmitting}) => {
+          signUp(values, this.props.navigation);
+          setSubmitting(false);
+          this.props.navigation.goBack() // <- Navigate to new screen
         }}
-        autoCapitalize="none"
-        placeholder="Enter your Password"
-        secureTextEntry={true}
-        autoCorrect={false}
-        returnKeyType="next"
-        onChangeText={formikProps.handleChange('password')}
+        validationSchema={SignupSchema}
+      >
+        {formikProps => (
+          <>
+            <View style={styles.headerContainer}>
+              <Icon
+                name="md-fitness"
+                size={80}
+                type="ionicon"
+                color={'#7265E2'}
+              />      
+            </View>
+            <Input
+            leftIcon={
+              <Icon
+                name="lock"
+                color="rgba(110, 120, 170, 1)"
+                size={25}
+              />
+            }
+            placeholder="Email"
+            inputContainerStyle={{
+              borderWidth: 1,
+              borderColor: 'white',
+              borderLeftWidth: 0,
+              height: 50,
+              backgroundColor: 'white',
+              marginBottom: 20,
+            }}
+            autoCapitalize="none"
+            placeholder="Enter your Password"
+            secureTextEntry={true}
+            autoCorrect={false}
+            returnKeyType="next"
+            onChangeText={formikProps.handleChange('password')}
       />
       <Input
         leftIcon={
@@ -130,38 +139,45 @@ export class PasswordInputScreen extends Component {
         </Text>
       ) : null}
       <BoxPasswordStrengthDisplay
+        useNativeDriver={true}
         password={formikProps.values.password}
       />
-      <View style={styles.btnWrapper}>
-        <Button
-          title="Continue"
-          loading={false}
-          loadingProps={{size: 'small', color: 'white'}}
-          buttonStyle={{
-            backgroundColor: '#7265E3',
-            borderRadius: 15,
-          }}
-          titleStyle={{fontWeight: 'bold', fontSize: 23}}
-          containerStyle={{marginVertical: 10, height: 50, width: 300}}
-          onPress={() =>
-            //this.props.navigation.navigate('TouchAuthentication')
-            //formikProps.handleSubmit
-            console.log(this.formikProps)
-            //console.log('Props -> ' + this.props)
-            //formikProps.handleSubmit
-            //formikProps.handleSubmit
+          
+            <View style={styles.btnWrapper}>
+              <Button
+                disabled={!(formikProps.isValid && formikProps.dirty)}
+                title="Continue"
+                loading={false}
+                loadingProps={{ size: 'small', color: 'white' }}
+                buttonStyle={{
+                  backgroundColor: '#7265E3',
+                  borderRadius: 15,
+                }}
+                titleStyle={{ fontWeight: 'bold', fontSize: 23 }}
+                containerStyle={{
+                  marginVertical: 10,
+                  height: 50,
+                  width: 300,
+                }}
+                onPress={
+                  //() => signUp(formikProps.values,this.props.navigation)
+                  //() => console.log(formikProps.values)
+                  formikProps.handleSubmit
+                 
+                }
+                underlayColor="transparent"
+              />
+            </View>
+          </>
+        )}
+      </Formik>
 
-          }
-          underlayColor="transparent"
-        />
-      </View>
-        </>
-      )}
-    </Formik>
-      
     );
+
   }
 }
+
+
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#F4F6FA',
@@ -206,5 +222,3 @@ const styles = StyleSheet.create({
   },
 });
 export default PasswordInputScreen;
-
-      

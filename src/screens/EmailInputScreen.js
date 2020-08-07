@@ -8,26 +8,23 @@ import {
 import { Text, Icon, Input, Button, SocialIcon } from 'react-native-elements';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import firebase from 'react-native-firebase';
 
+
+const SignupSchema = Yup.object().shape({
+  email: Yup.string()
+    .email('Invalid Email')
+    .required('Email is required'),
+});
 
 
 export class EmailInputScreen extends Component {
- 
-
-  
   static navigationOptions = {
     headerShown: false,
   };
 
 
   render() {
-    const SignupSchema = Yup.object().shape({
-      email: Yup.string()
-        .email('Invalid Email')
-        .required('Email is required'),
-    });
-
+  
     
     return (
       <Formik
@@ -105,6 +102,8 @@ export class EmailInputScreen extends Component {
 
   }
 }
+
+
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#F4F6FA',
