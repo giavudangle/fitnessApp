@@ -2,6 +2,7 @@ import {create, createAppContainer} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
 
 import EmailInputScreen from '../screens/EmailInputScreen';
+import HomeScreen from '../screens/HomeScreen';
 import IntroScreen from '../screens/IntroScreen';
 import LoginScreen from '../screens/LoginScreen';
 
@@ -19,7 +20,9 @@ const StackNavigator = createStackNavigator({
     navigationOptions:{headerShown:false}
   },
   EmailInputScreen:EmailInputScreen,
+  HomeScreen:HomeScreen,
   PasswordInputScreen:PasswordInputScreen,
- },{initialRouteName:'EmailInputScreen'});
+  
+ },{initialRouteName:'LoginScreen'});
 
 export default createAppContainer(StackNavigator);
